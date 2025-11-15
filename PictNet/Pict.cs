@@ -68,4 +68,22 @@ public static class Pict
                 PictNative.PictFreeIndices(cellsPtr);
         }
     }
+
+    /// <summary>
+    /// Chooses all combinations of the given options for each parameter
+    /// </summary>
+    /// <typeparam name="T">The type of object to be returned for all parameters. If different parameters have a different type, <see cref="object"/> can be used.</typeparam>
+    /// <param name="options">All possible options for each parameter</param>
+    /// <param name="order">The size of the sub-combinations to be exhausted in the returned combinations. If <paramref name="order"/> = 2, this function will return combinations such that all pairs are present.</param>
+    /// <param name="seed">Random seed for reproducibility</param>
+    /// <returns>An enumeration of combinations of parameter values such that every possible combination of length <paramref name="order"/> is included.</returns>
+    public static IEnumerable<List<T>> GenerateCombinations<T>(IList<IList<T>> options, int order = 2, uint seed = 0)
+    {
+        var valueCount = options.Select(o => o.Count).ToList();
+        var rows = GenerateIndices(valueCount, (uint)order, seed);
+        foreach (var row in rows)
+        {
+            yield return row.Zip(options).Select(tupl => tupl.Second[tupl.First]).ToList();
+        }
+    }
 }

@@ -13,51 +13,62 @@ namespace PictTests
 
             var rows = Pict.GenerateIndices(counts, 2);
 
-            var actual = new List<int>(rows.Count * counts.Length);
-            foreach (var row in rows)
+            List<List<int>> expected =
+            [
+                [0, 0, 1, 1],
+                [0, 1, 0, 2],
+                [0, 2, 0, 0],
+                [0, 2, 2, 1],
+                [0, 1, 1, 0],
+                [0, 1, 0, 1],
+                [0, 2, 1, 2],
+                [0, 0, 1, 3],
+                [0, 1, 0, 3],
+                [0, 0, 2, 0],
+                [0, 1, 2, 2],
+                [0, 2, 2, 3],
+                [0, 0, 0, 2]
+            ];
+
+            Assert.HasCount(expected.Count, rows, "Unexpected row count.");
+
+            foreach (var (row, expectedRow) in rows.Zip(expected))
             {
-                Assert.AreEqual(counts.Length, row.Count, "Unexpected column count in a row.");
-                actual.AddRange(row);
+                Assert.HasCount(counts.Length, row, "Unexpected column count in a row.");
+                CollectionAssert.AreEqual(expectedRow, row);
             }
-
-            var expected = new List<int>
-            {
-                0, 0, 1, 1,
-                0, 1, 0, 2,
-                0, 2, 0, 0,
-                0, 2, 2, 1,
-                0, 1, 1, 0,
-                0, 1, 0, 1,
-                0, 2, 1, 2,
-                0, 0, 1, 3,
-                0, 1, 0, 3,
-                0, 0, 2, 0,
-                0, 1, 2, 2,
-                0, 2, 2, 3,
-                0, 0, 0, 2
-            };
-
-            CollectionAssert.AreEqual(expected, actual);
-
-            AssertAllPairsPresent(rows, counts, 2);
         }
 
 
         [TestMethod]
         [DynamicData(nameof(AllPairsCases), DynamicDataSourceType.Method)]
-        public void TestAllPairsPresent(List<int> valueCounts, int order)
+        public void TestAllPairsPresent(List<int> valueCounts, int order, int seed)
         {
             var rows = Pict.GenerateIndices(valueCounts, (uint)order);
             AssertAllPairsPresent(rows, valueCounts, order);
         }
 
+        [TestMethod]
+        public void TestCombinations()
+        {
+            List<IList<string>> parameterOptions = [
+                ["A1"],
+                ["B1", "B2", "B3"],
+                ["C1", "C2", "C3"],
+                ["D1","D2","D3","D4"]
+            ];
+
+            var combinations = Pict.GenerateCombinations(parameterOptions, 2);
+
+        }
+
         public static IEnumerable<object[]> AllPairsCases()
         {
-            yield return new object[] { new List<int> { 2, 2 }, 2 };
-            yield return new object[] { new List<int> { 2, 3 }, 3 };
-            yield return new object[] { new List<int> { 3, 3, 3 }, 2 };
-            yield return new object[] { new List<int> { 2, 2, 2, 2 }, 2 };
-            yield return new object[] { new List<int> { 2, 3, 4 }, 3 };
+            yield return new object[] { new List<int> { 2, 2 }, 2, 1 };
+            yield return new object[] { new List<int> { 2, 3 }, 3, 2 };
+            yield return new object[] { new List<int> { 3, 3, 3 }, 2, 3 };
+            yield return new object[] { new List<int> { 2, 2, 2, 2 }, 2, 0 };
+            yield return new object[] { new List<int> { 2, 3, 4 }, 3, 0 };
         }
 
 
