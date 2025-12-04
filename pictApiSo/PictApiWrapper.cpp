@@ -1,6 +1,6 @@
 // PictApiWrapper.cpp
-#include "pch.h"
-#include "pictapi.h"
+#include <stddef.h> 
+#include "../api/pictapi.h"
 #include <stdlib.h>
 
 // Make sure we own these macros and avoid redefinition warnings
