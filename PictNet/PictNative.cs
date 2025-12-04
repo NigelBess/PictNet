@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-
 namespace PictNet;
 
 internal class PictNative
 {
-    const string Dll = "pictApiDll.dll";
+    const string Dll = "PictApi";
 
     [DllImport(Dll, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int PictGenerateIndices(
@@ -18,8 +17,9 @@ internal class PictNative
 
     [DllImport(Dll, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void PictFreeIndices(IntPtr cells);
+
     public PictNative()
     {
-        NativeLoader.EnsureLoaded();
+        NativeLoader.EnsureLoaded(); // fine to keep if you want, but not required for runtimes/*/native
     }
 }

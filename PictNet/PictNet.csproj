@@ -11,22 +11,10 @@
     <PackageProjectUrl>https://github.com/NigelBess/PictNet</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-	<Version>1.0.2</Version>
+	<Version>1.0.3</Version>
   </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="pictApiDll.dll" Pack="true" PackagePath="runtimes/win-x64/native">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-	
-  <ItemGroup>
-    <EmbeddedResource Include="pictApiDll.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
+ <ItemGroup>
     <None Include="..\LICENSE.TXT">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -36,5 +24,17 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+
+<ItemGroup>
+	<!-- Windows DLL -->
+	<None Include="..\pictApiDll\$(Configuration)\PictApi.dll"
+			Pack="true"
+			PackagePath="runtimes/win-x64/native" />
+
+	<!-- Linux SO -->
+	<None Include="..\pictApiSo\bin\x64\$(Configuration)\libPictApi.so"
+			Pack="true"
+			PackagePath="runtimes/linux-x64/native" />
+</ItemGroup>
 
 </Project>

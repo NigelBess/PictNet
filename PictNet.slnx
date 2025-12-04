@@ -6,6 +6,10 @@
   </Configurations>
   <Project Path="api/pictapi.vcxproj" Id="348f928a-b4a7-41fc-a312-76559047bdaf" />
   <Project Path="pictApiDll/pictApiDll.vcxproj" Id="62e7244b-fdd4-4984-9d51-42724095eba4" />
+  <Project Path="pictApiSo/pictApiSo.vcxproj" Id="734fbcd0-ab16-4d40-977e-a18aaf0c5886">
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
   <Project Path="PictNet/PictNet.csproj" />
   <Project Path="PictTests/PictTests.csproj" />
 </Solution>
