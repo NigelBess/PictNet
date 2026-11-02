@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <functional>
 #include <cassert>
+#include <cstdint>
+#include <cstdlib>
 
 //
 // Logging facility
@@ -91,6 +93,42 @@ typename _Col::iterator __map_erase
     collection.erase( where );
     return( next );
 }
+
+//
+// Random numbers for one generation, seeded by Model::SetRandomSeed
+//
+// A generation seeds and draws on a single thread, so the random state only has to be per thread
+// for concurrent generations in one process to stay reproducible. The MSVC CRT already keeps the
+// rand() state per thread. glibc's rand() is process-wide, so concurrent generations would
+// interleave draws; there we run glibc's own rand() algorithm on per-thread state instead, which
+// keeps the generated rows identical to what rand() produced for a single generation.
+//
+#if defined(__GLIBC__)
+struct PictRandomState
+{
+    random_data data{};
+    int32_t     buffer[ 32 ]{}; // 128 bytes selects the same TYPE_3 generator that rand() uses
+
+    PictRandomState() { initstate_r( 1, reinterpret_cast<char*>( buffer ), sizeof( buffer ), &data ); }
+};
+
+inline random_data& pictRandomData()
+{
+    thread_local PictRandomState state;
+    return state.data;
+}
+
+inline void pictSrand( unsigned int seed ) { srandom_r( seed, &pictRandomData() ); }
+inline int  pictRand()
+{
+    int32_t result;
+    random_r( &pictRandomData(), &result );
+    return result;
+}
+#else
+inline void pictSrand( unsigned int seed ) { srand( seed ); }
+inline int  pictRand() { return rand(); }
+#endif
 
 
 #ifdef __cplusplus
@@ -342,7 +380,9 @@ public:
     }
 
 private:
-    static unsigned int m_lastUsedId; // static source of identifiers
+    // Per thread, like the random state: ids only order combinations within one generation, and a
+    // shared counter raced by concurrent generations could hand out duplicates that make the order arbitrary
+    static thread_local unsigned int m_lastUsedId; // static source of identifiers
     unsigned int        m_id;         // unique identifier of this instance
 
     ParamCollection m_params;
@@ -542,7 +582,7 @@ public:
     void SetRandomSeed( long seed )
     {
         m_randomSeed = seed;
-        srand( m_randomSeed );
+        pictSrand( m_randomSeed );
         for( auto & submodel : m_submodels ) submodel->SetRandomSeed( m_randomSeed );
     }
 

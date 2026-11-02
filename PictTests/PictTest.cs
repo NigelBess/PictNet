@@ -120,6 +120,25 @@ namespace PictTests
             }
         }
 
+        /// <summary>
+        /// The native engine used to share its random state and combination ids across the process,
+        /// so concurrent calls with identical input sometimes returned different rows.
+        /// </summary>
+        [TestMethod]
+        public void GenerateIndices_Concurrent_MatchesSequential()
+        {
+            var counts = new[] { 4, 2, 2, 2, 2 };
+            string Describe(List<List<int>> rows) => string.Join(" | ", rows.Select(row => string.Join(",", row)));
+
+            var expected = Describe(Pict.GenerateIndices(counts));
+
+            var results = new string[4000];
+            Parallel.For(0, results.Length, new ParallelOptions { MaxDegreeOfParallelism = 16 }, i => results[i] = Describe(Pict.GenerateIndices(counts)));
+
+            var mismatchCount = results.Count(result => result != expected);
+            Assert.AreEqual(0, mismatchCount, $"{mismatchCount} of {results.Length} concurrent calls returned different rows than a sequential call");
+        }
+
         public static IEnumerable<object[]> AllPairsCases()
         {
             yield return new object[] { new List<int> { 2, 2 }, 2, 1 };

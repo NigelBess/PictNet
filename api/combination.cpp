@@ -4,7 +4,7 @@
 namespace pictcore
 {
 
-unsigned int Combination::m_lastUsedId = UNDEFINED_ID;
+thread_local unsigned int Combination::m_lastUsedId = UNDEFINED_ID;
 
 //
 //

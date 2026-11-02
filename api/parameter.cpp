@@ -112,12 +112,12 @@ int Parameter::PickValue()
                 // Arbitrary choice - we already have this parameter covered
                 // Use weights if they exist
                 bestValueCount += GetWeight(value);
-                if (rand() % bestValueCount < GetWeight(value))
+                if (pictRand() % bestValueCount < GetWeight(value))
                 {
                     bestValue = value;
                 }
             }
-            else if (totalZeros == maxTotal && !(rand() % ++bestValueCount))
+            else if (totalZeros == maxTotal && !(pictRand() % ++bestValueCount))
             {
                 bestValue = value;
                 maxTotal  = totalZeros;
